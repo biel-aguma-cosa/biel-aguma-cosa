@@ -84,14 +84,18 @@ b = ''
 players = []
 boxes = []
 buttons = []
+keys = []
+gates = []
 background = []
 
 def processy(num):
     r = (num*-1) + 7
     return r
+# (r - 7) * -1 = num
 def processx(num):
     r = num + 7
     return r
+# r - 7 = num
 
 y0 = processy(0)
 x0 = processx(0)
@@ -106,28 +110,38 @@ def level_up(self):
                     c_background += 1
 
 class entity_:
-    def __init__(self,inx,iny,img,z):
+    def __init__(self,inx,iny,img,z,code=0):
         self.inx = inx
         self.iny = iny
         self.x = processx(inx)
         self.y = processy(iny)
         self.z = z
         self.img = img
+        self.code = code
     def move_x(self,x_):
         global c_background
         if self.z == c_background:
             if (background[self.z][self.y][processx(self.inx + x_)] == '□'):
                 self.inx = self.inx + x_
                 self.x = (processx(self.inx))
-            elif ((background[self.z][self.y][processx(self.iny + x_)] == '←') and (x_ == -1)):
+            elif ((background[self.z][self.y][processx(self.inx + x_)] == '←') and (x_ == -1)):
                 self.inx = self.inx + x_
                 self.x = (processx(self.inx))
-            elif ((background[self.z][self.y][processx(self.iny + x_)] == '→') and (x_ == 1)):
+            elif ((background[self.z][self.y][processx(self.inx + x_)] == '→') and (x_ == 1)):
                 self.inx = self.inx + x_
                 self.x = (processx(self.inx))
             elif (background[self.z][self.y][processx(self.inx + x_)] == '◌'):
                 self.inx = self.inx + x_
                 self.x = (processx(self.inx))
+            elif (background[self.z][self.y][processx(self.inx + x_)] == '÷'):
+                self.inx = self.inx + x_
+                for box in keys[:]:
+                    if box.iny == self.iny and box.inx == self.inx and box.z == self.z and background:
+                        for xob in gates[:]:
+                            if xob.code == box.code and xob.z == box.z:
+                                gates.remove(xob)
+                        keys.remove(box)
+                self.x = (processy(self.inx))
             elif (background[self.z][self.y][processx(self.inx + x_)] == '◙') and self.img != '◙':
                 if (background[self.z][self.y][processx(self.inx + x_*2)] == '□' or background[self.z][self.y][processx(self.inx + x_*2)] == '◌') or ((background[self.z][self.y][processx(self.inx + x_*2)] == '←') and x_ == -1) or ((background[self.z][self.y][processx(self.inx + x_*2)] == '→') and x_ == 1):
                     self.inx = self.inx + x_
@@ -150,13 +164,23 @@ class entity_:
             elif (background[self.z][processy(self.iny + y_)][self.x] == '◌'):
                 self.iny = self.iny + y_
                 self.y = (processy(self.iny))
-            elif (background[self.z][processy(self.iny + y_)][self.x] == '◙') and self.img != '◙':
+            elif (background[self.z][processy(self.iny + y_)][self.x] == '÷'):
+                self.iny = self.iny + y_
+                for box in keys[:]:
+                    if box.iny == self.iny and box.inx == self.inx and box.z == self.z and background and self.img == '☻':
+                        for xob in gates[:]:
+                            if xob.code == box.code and xob.z == box.z:
+                                gates.remove(xob)
+                        keys.remove(box)
+                self.y = (processy(self.iny))
+            elif (background[self.z][processy(self.iny + y_)][self.x] == '◙') and self.img == '☻':
                 if (background[self.z][processy(self.iny + y_*2)][self.x] == '□' or background[self.z][processy(self.iny + y_*2)][self.x] == '◌') or (background[self.z][processy(self.iny + y_*2)][self.x] == '↑' and y_ == 1) or (background[self.z][processy(self.iny + y_*2)][self.x] == '↓' and y_ == -1):
                     self.iny = self.iny + y_
                     for box in boxes[:]:
-                        if box.iny == self.iny and box.iny == self.iny and box.z == self.z and background:
+                        if box.iny == self.iny and box.inx == self.inx and box.z == self.z and background:
                             box.move_y(y_)
                     self.y = (processy(self.iny))
+                
 last_lvl = -1
 for backgrounds in background[:]:
     last_lvl +=1
@@ -171,43 +195,50 @@ boxes.append(entity_(inx=-1,iny= 0,img='◙',z=1))
 buttons.append(entity_(inx=1,iny=0,img='◌',z=1))
 
 players.append(entity_(inx=-2,iny=1,img='☻',z=2))
-boxes.append(entity_(inx= 1,iny=-2,img='◙',z=2))
-boxes.append(entity_(inx= 0,iny= 1,img='◙',z=2))
+boxes.append(entity_(inx=1,iny=-2,img='◙',z=2))
+boxes.append(entity_(inx=0,iny= 1,img='◙',z=2))
 buttons.append(entity_(inx=2,iny=2,img='◌',z=2))
 
 players.append(entity_(inx=-2,iny=2,img='☻',z=3))
-boxes.append(entity_(inx= 0,iny= 0,img='◙',z=3))
-boxes.append(entity_(inx= 1,iny= 0,img='◙',z=3))
-boxes.append(entity_(inx= 0,iny=-2,img='◙',z=3))
+boxes.append(entity_(inx=0,iny=0,img='◙',z=3))
+boxes.append(entity_(inx=1,iny=0,img='◙',z=3))
+boxes.append(entity_(inx=0,iny=-2,img='◙',z=3))
 buttons.append(entity_(inx=2,iny=2,img='◌',z=3))
 
 players.append(entity_(inx=-2,iny=0,img='☻',z=4))
-boxes.append(entity_(inx=-1,iny= 1,img='◙',z=4))
-boxes.append(entity_(inx=-1,iny= 0,img='◙',z=4))
+boxes.append(entity_(inx=-1,iny=1,img='◙',z=4))
+boxes.append(entity_(inx=-1,iny=0,img='◙',z=4))
 boxes.append(entity_(inx=-1,iny=-1,img='◙',z=4))
 buttons.append(entity_(inx=0,iny=3,img='◌',z=4))
 
 players.append(entity_(inx=-2,iny=2,img='☻',z=5))
-boxes.append(entity_(inx=-1,iny= 0,img='◙',z=5))
+boxes.append(entity_(inx=-1,iny=0,img='◙',z=5))
 buttons.append(entity_(inx=1,iny=0,img='◌',z=5))
 
-players.append(entity_(inx=-2-1,iny=0,img='☻',z=6))
-boxes.append(entity_(inx= 0-1,iny= 3,img='◙',z=6))
-boxes.append(entity_(inx= 2-1,iny= 3,img='◙',z=6))
-boxes.append(entity_(inx= 1-1,iny= 2,img='◙',z=6))
-boxes.append(entity_(inx= 1-1,iny= 4,img='◙',z=6))
-boxes.append(entity_(inx=-1-1,iny= 2,img='◙',z=6))
-boxes.append(entity_(inx=-1-1,iny= 4,img='◙',z=6))
-boxes.append(entity_(inx= 1-1,iny= 0,img='◙',z=6))
-boxes.append(entity_(inx= 2,iny= 0,img='◙',z=6))
-boxes.append(entity_(inx= 2-1,iny= 0,img='◙',z=6))
-boxes.append(entity_(inx= 1-1,iny=-2,img='◙',z=6))
-boxes.append(entity_(inx=-1-1,iny=-2,img='◙',z=6))
-boxes.append(entity_(inx=-1-1,iny=-3,img='◙',z=6))
-boxes.append(entity_(inx=-1-1,iny=-4,img='◙',z=6))
-buttons.append(entity_(inx=3,iny=0,img='◌',z=6))
-#○
-c_background=1
+players.append(entity_(inx=3,iny=0,img='☻',z=6))
+boxes.append(entity_(inx=0,iny=3,img='◙',z=6))
+buttons.append(entity_(inx=-3,iny=0,img='◌',z=6))
+
+players.append(entity_(inx=-2,iny=1,img='☻',z=7))
+boxes.append(entity_(inx=-2,iny=-2,img='◙',z=7))
+boxes.append(entity_(inx=-3,iny=-1,img='◙',z=7))
+buttons.append(entity_(inx=3,iny=0,img='◌',z=7))
+
+players.append(entity_(inx=-2,iny=2,img='☻',z=8))
+boxes.append(entity_(inx=0,iny=1,img='◙',z=8))
+boxes.append(entity_(inx=0,iny=-3,img='◙',z=8))
+boxes.append(entity_(inx=1,iny=-2,img='◙',z=8))
+boxes.append(entity_(inx=-1,iny=-1,img='◙',z=8))
+buttons.append(entity_(inx=2,iny=2,img='◌',z=8))
+
+players.append(entity_(inx=-2,iny=0,img='☻',z=9))
+boxes.append(entity_(inx=0,iny=0,img='◙',z=9))
+keys.append(entity_(inx=0,iny=2,img='÷',z=9,code=101))
+gates.append(entity_(inx=1,iny=0,img='≡',z=9,code=101))
+buttons.append(entity_(inx=2,iny=0,img='◌',z=9))
+
+#⌂Φ◌◙☻▬÷≡
+c_background=9
 printer = ''
 def load_screen():
     global b
@@ -313,21 +344,117 @@ def load_screen():
 [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
 [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','5']],
 [
+['T','R','A','V','E','S','S','I','A',' ',' ',' ',' ',' ',' '],
 [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
-[' ',' ','I','N','C','O','M','P','L','E','T','O','‼',' ',' '],
-[' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','■','■','↓','□','■','■','■',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','□','□','■',' ',' ',' '],
-[' ',' ',' ','■','□','■','■','□','↑','■','■','■',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
-[' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' ',' '],
-[' ',' ','I','N','C','O','M','P','L','E','T','O','‼',' ',' '],
+[' ',' ',' ',' ',' ','■','■','■','■','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','↑','□','↓','■',' ',' ',' ',' ',' '],
+[' ',' ',' ','■','■','■','↑','□','↓','■','■','■',' ',' ',' '],
+[' ',' ',' ','■','□','□','↑','□','□','□','□','■',' ',' ',' '],
+[' ',' ',' ','■','■','■','↑','□','↓','■','■','■',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','↑','□','↓','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','↑','□','↓','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ','■','■','■','■','■',' ',' ',' ',' ',' '],
 [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','6']],
+[
+['D','E','S','V','I','O',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' ',' '],
+[' ',' ',' ','■','□','□','□','□','□','■','■','■',' ',' ',' '],
+[' ',' ',' ','■','□','□','□','□','□','□','□','■',' ',' ',' '],
+[' ',' ',' ','■','□','■','■','■','↑','■','■','■',' ',' ',' '],
+[' ',' ','■','■','□','□','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ','■','□','□','□','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ','■','□','□','□','□','□','□','■',' ',' ',' ',' ',' '],
+[' ',' ','■','■','■','■','■','■','■','■',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','7']],
+[
+['C','O','R','R','E','N','T','E','Z','A',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','←','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','←','□','■',' ',' ',' ',' '],#←↑↓→
+[' ',' ','■','■','■','↓','■','□','■','↑','■',' ',' ',' ',' '],#
+[' ',' ','■','□','←','□','□','□','□','□','■',' ',' ',' ',' '],#
+[' ',' ','■','□','■','←','□','□','□','□','■',' ',' ',' ',' '],#
+[' ',' ','■','□','■','■','■','□','■','↑','■','■',' ',' ',' '],#
+[' ',' ','■','□','□','□','□','□','□','□','□','■',' ',' ',' '],#
+[' ',' ','■','■','■','■','■','■','■','■','■','■',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','8']],
+[
+['T','R','A','N','C','A',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','■','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','■','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','■','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','■','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','9']],
+[
+['I','N','I','C','I','O',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' '],
+[' ',' ',' ',' ',' ',' ','■','O','■','□','□','□','■',' ',' '],
+[' ',' ',' ',' ',' ',' ','■','H','■','□','□','□','■',' ',' '],
+[' ',' ',' ',' ',' ',' ','■','□','■','□','□','□','■',' ',' '],
+[' ',' ',' ','■','■','■','■','↑','■','■','↓','■','■',' ',' '],
+[' ',' ',' ','■',' ','X','←','X','□','□','□','□','■',' ',' '],#←↑↓→
+[' ',' ',' ','■',' ','X','■','□','□','□','□','□','■',' ',' '],
+[' ',' ',' ','■',' ',' ','■','■','■','■','↑','■','■',' ',' '],
+[' ',' ',' ','■',' ',' ',' ',' ',' ',' ',' ',' ','■',' ',' '],
+[' ',' ',' ','■',' ',' ',' ',' ',' ',' ',' ',' ','■',' ',' '],
+[' ',' ',' ','■','■','■','■','■','■','■','■','■','■',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','1','0']],
+[
+['I','N','I','C','I','O',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],#←↑↓→
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','1','1']],
+[
+['I','N','I','C','I','O',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],#←↑↓→
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','□','□','□','□','□','■',' ',' ',' ',' '],
+[' ',' ',' ',' ','■','■','■','■','■','■','■',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
+[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','1']],
 [
 ['■','■','■','■','■','■','■','■','■','■','■','■','■','■','■'],
 ['■',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','■'],
@@ -357,6 +484,12 @@ def load_screen():
     for box in boxes[:]:
         if box.z == c_background:
             background[box.z][box.y][box.x] = box.img
+    for key in keys[:]:
+        if key.z == c_background:
+            background[key.z][key.y][key.x] = key.img
+    for gate in gates[:]:
+        if gate.z == c_background:
+            background[gate.z][gate.y][gate.x] = gate.img
     print('._______________________________________________.')
     print('|    sair = ×   |     w = ↑     |               |')
     print('|     a = ←     |     s = ↓     |     d = →     |')
