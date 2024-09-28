@@ -244,6 +244,7 @@ buttons.append(entity_(inx=-3,iny=0,img='◌',z=6))
 
 players.append(entity_(inx=-2,iny=1,img='☻',z=7))
 boxes.append(entity_(inx=-2,iny=-2,img='◙',z=7))
+boxes.append(entity_(inx=0,iny=-2,img='◙',z=7))
 boxes.append(entity_(inx=-3,iny=-1,img='◙',z=7))
 buttons.append(entity_(inx=3,iny=0,img='◌',z=7))
 
@@ -599,4 +600,3 @@ def key_input():
 while b != 'sair':
     load_screen()
     key_input()
-
