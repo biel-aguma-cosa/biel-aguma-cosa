@@ -1,2 +1,4 @@
-# biel-aguma-cosa
-asadaf a vrfwefgvwefeewvf we ewf sfsagfsdfe rfsd fsdfews
+# joguinho
+final = versão final
+app.exe = pre versão final
+app.py = pre app.exe
