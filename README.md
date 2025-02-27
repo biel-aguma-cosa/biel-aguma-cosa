@@ -1,9 +1,11 @@
 # joguinho
 
-##nota-vi-rus
+**NOTA-VI-RUS**
+
 final = versão final  
 app.exe = pre versão final  
 app.py = pre app.exe
 
-##nota-vii-rus
+**NOTA-VII-RUS**
+
 0.2 = primeira versão pública
